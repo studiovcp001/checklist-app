@@ -564,7 +564,8 @@
 
     .mobile-add-btn,
     .mobile-settings-btn,
-    .mobile-panel-backdrop {
+    .mobile-panel-backdrop,
+    .mobile-panel-close {
       display: none;
     }
 
@@ -617,7 +618,7 @@
         width: auto;
         max-height: min(82vh, 680px);
         overflow-y: auto;
-        z-index: 1001;
+        z-index: 2147483646;
         border-radius: 24px;
         padding-bottom: 72px;
         -webkit-overflow-scrolling: touch;
@@ -631,6 +632,27 @@
         display: none;
       }
 
+      .mobile-panel-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border: none;
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin: 0 0 12px;
+        background: rgba(255,255,255,0.12);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .side-panel,
+      .side-panel * {
+        pointer-events: auto;
+      }
+
       .mobile-add-btn {
         display: inline-flex;
         align-items: center;
@@ -638,7 +660,7 @@
         position: fixed;
         right: 16px;
         bottom: 16px;
-        z-index: 1002;
+        z-index: 2147483647;
         width: 58px;
         height: 58px;
         border: none;
@@ -659,7 +681,7 @@
         position: fixed;
         right: 84px;
         bottom: 20px;
-        z-index: 1002;
+        z-index: 2147483647;
         border: none;
         border-radius: 999px;
         padding: 10px 14px;
@@ -675,8 +697,9 @@
         display: none;
         position: fixed;
         inset: 0;
-        z-index: 1000;
+        z-index: 2147483645;
         background: rgba(15, 23, 42, 0.38);
+        pointer-events: none;
       }
 
       body.panel-open .mobile-panel-backdrop {
@@ -698,6 +721,7 @@
       </section>
 
       <aside class="side-panel" aria-label="操作パネル">
+        <button class="mobile-panel-close" id="mobilePanelCloseBtn" type="button">閉じる</button>
         <h1>
           <span id="appTitle" class="editable-title" contenteditable="true" title="クリックしてタイトルを編集">チェックリスト</span>
         </h1>
@@ -897,6 +921,7 @@
     const mobileAddBtn = document.getElementById("mobileAddBtn");
     const mobilePanelToggle = document.getElementById("mobilePanelToggle");
     const mobilePanelBackdrop = document.getElementById("mobilePanelBackdrop");
+    const mobilePanelCloseBtn = document.getElementById("mobilePanelCloseBtn");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
     const themeGrid = document.getElementById("themeGrid");
     const colorAccent = document.getElementById("colorAccent");
@@ -1297,6 +1322,7 @@
     mobileAddBtn.addEventListener("click", addTodoMobile);
     mobilePanelToggle.addEventListener("click", toggleMobilePanel);
     mobilePanelBackdrop.addEventListener("click", closeMobilePanel);
+    mobilePanelCloseBtn.addEventListener("click", closeMobilePanel);
 
     window.addEventListener("keydown", event => {
       if (event.key === "Escape") closeMobilePanel();
