@@ -325,6 +325,13 @@
     }
 
 
+    .mobile-add-btn,
+    .mobile-settings-btn,
+    .mobile-panel-backdrop,
+    .mobile-panel-close {
+      display: none;
+    }
+
     .drag-handle {
       display: inline-flex;
       align-items: center;
@@ -344,16 +351,50 @@
       grid-column: 5 / 6;
       align-self: center;
       justify-self: center;
+      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
     }
 
     .drag-handle:active {
       cursor: grabbing;
       background: var(--accent);
       color: var(--number-text);
+      transform: scale(1.04);
     }
 
     .sort-btns {
       display: none !important;
+    }
+
+
+
+    .drag-placeholder {
+      display: block;
+      height: 54px;
+      border-radius: 18px;
+      border: 2px dashed color-mix(in srgb, var(--accent) 55%, #ffffff);
+      background: color-mix(in srgb, var(--accent) 7%, #ffffff);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.65);
+      transition:
+        transform 0.32s cubic-bezier(.16,1,.3,1),
+        height 0.26s cubic-bezier(.16,1,.3,1),
+        margin 0.26s cubic-bezier(.16,1,.3,1),
+        opacity 0.22s ease;
+    }
+
+    .drag-source {
+      display: none !important;
+    }
+
+    .drag-float {
+      transform-origin: center center;
+    }
+
+    ul.dragging-list li:not(.drag-source) {
+      transition:
+        margin 0.28s cubic-bezier(.16,1,.3,1),
+        padding 0.24s cubic-bezier(.16,1,.3,1),
+        box-shadow 0.22s ease,
+        background 0.2s ease;
     }
 
     .drag-float {
@@ -367,11 +408,15 @@
       border-left: 6px solid var(--accent);
       border-radius: 18px;
       box-shadow:
-        0 28px 64px rgba(15, 23, 42, 0.36),
-        0 12px 26px rgba(15, 23, 42, 0.22);
+        0 30px 70px rgba(15, 23, 42, 0.34),
+        0 14px 30px rgba(15, 23, 42, 0.20);
       opacity: 1 !important;
       visibility: visible !important;
       will-change: transform;
+      transition: none !important;
+      animation: none !important;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
     }
 
     .drag-float > * {
@@ -385,21 +430,19 @@
     }
 
     .drag-source {
-      opacity: 0 !important;
+      opacity: 0.08 !important;
       visibility: hidden !important;
     }
 
     li.drop-before {
-      margin-top: 42px;
       box-shadow:
-        0 -7px 0 var(--accent),
+        0 -5px 0 var(--accent),
         0 14px 28px rgba(31, 41, 51, 0.08);
     }
 
     li.drop-after {
-      margin-bottom: 42px;
       box-shadow:
-        0 7px 0 var(--accent),
+        0 5px 0 var(--accent),
         0 14px 28px rgba(31, 41, 51, 0.08);
     }
 
@@ -641,30 +684,123 @@
     }
 
     @media (max-width: 760px) {
-      body { padding: 20px 12px; }
-
-      .app {
-        padding: 14px;
-        border-radius: 24px;
+      body {
+        padding: 8px;
+        padding-bottom: 86px;
       }
 
-      .layout { grid-template-columns: 1fr; }
+      .app {
+        padding: 8px;
+        border-radius: 20px;
+      }
 
+      .layout {
+        display: block;
+      }
+
+      .list-panel {
+        padding: 10px;
+        border-radius: 20px;
+      }
+
+      .summary {
+        margin: 0 0 8px;
+        font-size: 12px;
+        padding: 8px 10px;
+        border-radius: 13px;
+      }
+
+      ul {
+        gap: 6px;
+      }
 
       li {
         grid-template-columns: 28px 52px minmax(0, 1fr) 36px;
+        gap: 5px;
+        border-left-width: 5px;
+        border-radius: 14px;
+        padding: 6px 7px;
         position: relative;
         overflow: hidden;
         touch-action: pan-y;
+        box-shadow: 0 8px 16px rgba(31, 41, 51, 0.07);
+        transition:
+          background 0.18s ease,
+          transform 0.32s cubic-bezier(.16,1,.3,1),
+          opacity 0.18s ease,
+          box-shadow 0.24s ease,
+          margin 0.26s cubic-bezier(.16,1,.3,1),
+          padding 0.28s cubic-bezier(.16,1,.3,1);
+      }
+
+      li:hover {
+        transform: none;
+        box-shadow: 0 8px 16px rgba(31, 41, 51, 0.07);
+      }
+
+      li.completed {
+        transform: translateX(8px);
+      }
+
+      li.completed:hover {
+        transform: translateX(8px);
+      }
+
+      .todo-number {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+      }
+
+      .check-pair {
+        gap: 4px;
+        padding-top: 0;
+      }
+
+      .check-cell {
+        min-width: 22px;
+        gap: 2px;
+      }
+
+      .check-label {
+        font-size: 9px;
+        line-height: 1.1;
+        min-height: 10px;
+        max-width: 28px;
+      }
+
+      .check-wrap {
+        width: 19px;
+        height: 19px;
+        border-radius: 7px;
+      }
+
+      input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+      }
+
+      .todo-text {
+        font-size: 14px;
+        padding: 3px 5px;
+        border-radius: 9px;
+        line-height: 1.35;
+      }
+
+      .sort-btns {
+        display: none !important;
       }
 
       .drag-handle {
         grid-column: 4 / 5;
         grid-row: 1 / 3;
+        align-self: center;
+        justify-self: center;
         min-width: 30px;
         padding: 5px 7px;
         font-size: 17px;
-        z-index: 5;
+        z-index: 8;
+        position: relative;
       }
 
       .delete-btn {
@@ -672,16 +808,20 @@
         top: 0;
         right: 0;
         bottom: 0;
-        width: 82px;
-        min-width: 82px;
+        width: 86px;
+        min-width: 86px;
         border-radius: 0 14px 14px 0;
         background: linear-gradient(135deg, #f87171, #dc2626);
         color: #ffffff;
         transform: translateX(100%);
-        transition: transform 0.18s ease;
+        transition: transform 0.22s cubic-bezier(.2,.85,.2,1);
         z-index: 4;
         pointer-events: none;
         font-size: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
       }
 
       .delete-btn::before {
@@ -690,53 +830,208 @@
         line-height: 1;
       }
 
-      li.swiped {
-        padding-right: 82px;
-        box-shadow: 0 12px 26px rgba(220, 38, 38, 0.16);
+      li.swiping .delete-btn,
+      li.swiped .delete-btn {
+        transform: translateX(0);
       }
 
       li.swiped .delete-btn {
-        transform: translateX(0);
         pointer-events: auto;
       }
 
+      li.swiped {
+        padding-right: 86px;
+        box-shadow: 0 12px 26px rgba(220, 38, 38, 0.16);
+      }
+
+      li.swiping .todo-number,
+      li.swiping .check-pair,
+      li.swiping .todo-text,
+      li.swiping .drag-handle,
+      li.swiped .todo-number,
+      li.swiped .check-pair,
+      li.swiped .todo-text,
+      li.swiped .drag-handle {
+        transform: translateX(-54px);
+        transition: transform 0.22s cubic-bezier(.2,.85,.2,1);
+      }
+
       li.drop-before {
-        margin-top: 34px;
         box-shadow:
-          0 -6px 0 var(--accent),
+          0 -5px 0 var(--accent),
           0 8px 16px rgba(31, 41, 51, 0.07);
       }
 
       li.drop-after {
-        margin-bottom: 34px;
         box-shadow:
-          0 6px 0 var(--accent),
+          0 5px 0 var(--accent),
           0 8px 16px rgba(31, 41, 51, 0.07);
       }
 
-      .side-panel {
-        position: static;
-        order: -1;
-        max-height: none;
-        overflow: visible;
+
+      .drag-placeholder {
+        height: 46px;
+        border-radius: 14px;
       }
 
-      .list-panel { padding: 18px; }
+      .drag-float {
+        border-radius: 14px;
+        box-shadow:
+          0 24px 52px rgba(15, 23, 42, 0.34),
+          0 10px 22px rgba(15, 23, 42, 0.20);
+        transition: none !important;
+        animation: none !important;
+      }
 
-      li { grid-template-columns: 36px 64px minmax(0, 1fr); }
+      .drag-source {
+        opacity: 0.08 !important;
+        visibility: hidden !important;
+      }
 
-      li.completed { transform: translateX(20px); }
+      .side-panel {
+        display: none;
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: auto;
+        height: min(74vh, 620px);
+        max-height: min(74vh, 620px);
+        overflow-y: auto;
+        z-index: 2147483646;
+        border-radius: 24px;
+        padding: 16px 16px 76px;
+        -webkit-overflow-scrolling: touch;
+      }
 
-      li.completed:hover { transform: translateX(20px); }
+      body.panel-open .side-panel {
+        display: block;
+      }
 
-      .sort-btns,
-      .delete-btn { grid-column: 3 / 4; }
+      .side-panel .input-area {
+        display: none;
+      }
 
-      .sort-btns { justify-self: start; }
+      .side-panel::before {
+        width: 52px;
+        height: 4px;
+        margin: 0 auto 12px;
+      }
+
+      .mobile-panel-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border: none;
+        border-radius: 14px;
+        padding: 10px 12px;
+        margin: 0 0 12px;
+        background: rgba(255,255,255,0.12);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .side-panel h1 {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+
+      .control-box {
+        padding: 10px;
+        border-radius: 16px;
+      }
+
+      .controls {
+        gap: 10px;
+      }
+
+      .control-label {
+        margin-bottom: 7px;
+        font-size: 11px;
+      }
+
+      .filter-btns,
+      .action-btns,
+      .file-btns,
+      .setting-btns {
+        gap: 6px;
+      }
+
+      .filter-btn,
+      .undo-btn,
+      .clear-btn,
+      .file-btn,
+      .theme-toggle-btn,
+      .theme-reset-btn,
+      .setting-row select,
+      .setting-row input {
+        padding: 7px 9px;
+        font-size: 12px;
+        border-radius: 11px;
+      }
+
+      .mobile-add-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 2147483647;
+        width: 56px;
+        height: 56px;
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #e7c873, #d6a84f);
+        color: #1c1917;
+        font-size: 30px;
+        line-height: 1;
+        font-weight: 900;
+        box-shadow: 0 14px 28px rgba(21, 23, 26, 0.24);
+        cursor: pointer;
+      }
+
+      .mobile-settings-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        right: 82px;
+        bottom: 20px;
+        z-index: 2147483647;
+        border: none;
+        border-radius: 999px;
+        padding: 9px 13px;
+        background: rgba(21, 23, 26, 0.88);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 900;
+        box-shadow: 0 12px 24px rgba(21, 23, 26, 0.2);
+        cursor: pointer;
+      }
+
+      .mobile-panel-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2147483645;
+        background: rgba(15, 23, 42, 0.32);
+        pointer-events: none;
+      }
+
+      body.panel-open .mobile-panel-backdrop {
+        display: block;
+      }
     }
   </style>
 </head>
 <body>
+  <button class="mobile-add-btn" id="mobileAddBtn" aria-label="リストを追加">＋</button>
+  <button class="mobile-settings-btn" id="mobilePanelToggle" aria-label="設定を開く">設定</button>
+  <div class="mobile-panel-backdrop" id="mobilePanelBackdrop"></div>
   <main class="app">
     <div class="layout">
       <section class="list-panel" aria-label="Todoリスト">
@@ -746,6 +1041,7 @@
       </section>
 
       <aside class="side-panel" aria-label="操作パネル">
+        <button class="mobile-panel-close" id="mobilePanelCloseBtn" type="button">閉じる</button>
         <h1>
           <span id="appTitle" class="editable-title" contenteditable="true" title="クリックしてタイトルを編集">チェックリスト</span>
         </h1>
@@ -929,8 +1225,13 @@
     let swipedTodoId = null;
     let touchStartX = 0;
     let touchStartY = 0;
+    let touchMoved = false;
     const historyLimit = 20;
 
+    const mobileAddBtn = document.getElementById("mobileAddBtn");
+    const mobilePanelToggle = document.getElementById("mobilePanelToggle");
+    const mobilePanelBackdrop = document.getElementById("mobilePanelBackdrop");
+    const mobilePanelCloseBtn = document.getElementById("mobilePanelCloseBtn");
     const appTitle = document.getElementById("appTitle");
     const todoInput = document.getElementById("todoInput");
     const addBtn = document.getElementById("addBtn");
@@ -1036,32 +1337,100 @@
       });
     }
 
-    function getDropItems() {
+    function getDraggableItems() {
       return Array.from(todoList.querySelectorAll("li[data-todo-id]"))
-        .filter(item => !dragState || Number(item.dataset.todoId) !== dragState.todoId);
+        .filter(item => !item.classList.contains("drag-source"));
     }
 
-    function getInsertIndex(clientY) {
-      const items = getDropItems();
-      for (let i = 0; i < items.length; i++) {
-        const rect = items[i].getBoundingClientRect();
-        if (clientY < rect.top + rect.height / 2) return i;
-      }
-      return items.length;
+    function getPlaceholderIndex() {
+      if (!dragState || !dragState.placeholder) return null;
+      return Array.from(todoList.children).indexOf(dragState.placeholder);
     }
 
-    function showDropIndicator(insertIndex) {
-      clearDropIndicators();
-      const items = getDropItems();
-      if (items.length === 0) return;
+    function getInsertReference(clientY) {
+      const items = getDraggableItems();
 
-      if (insertIndex <= 0) {
-        items[0].classList.add("drop-before");
-      } else if (insertIndex >= items.length) {
-        items[items.length - 1].classList.add("drop-after");
-      } else {
-        items[insertIndex].classList.add("drop-before");
+      for (const item of items) {
+        const rect = item.getBoundingClientRect();
+        if (clientY < rect.top + rect.height / 2) {
+          return item;
+        }
       }
+
+      return null;
+    }
+
+
+    function getAnimatedListElements() {
+      return Array.from(todoList.children)
+        .filter(item => item.matches && (item.matches("li[data-todo-id]") || item.classList.contains("drag-placeholder")))
+        .filter(item => !item.classList.contains("drag-float"));
+    }
+
+    function captureListPositions() {
+      const positions = new Map();
+      getAnimatedListElements().forEach(item => {
+        positions.set(item, item.getBoundingClientRect());
+      });
+      return positions;
+    }
+
+    function animateListReflow(beforePositions) {
+      const items = getAnimatedListElements().filter(item => !item.classList.contains("drag-float"));
+
+      items.forEach(item => {
+        const before = beforePositions.get(item);
+        if (!before) return;
+
+        const after = item.getBoundingClientRect();
+        const deltaX = before.left - after.left;
+        const deltaY = before.top - after.top;
+
+        if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
+
+        // 前回のアニメーションが残っていたら止める
+        if (item._moveAnimation) {
+          item._moveAnimation.cancel();
+        }
+
+        item._moveAnimation = item.animate(
+          [
+            { transform: `translate3d(${deltaX}px, ${deltaY}px, 0)` },
+            { transform: "translate3d(0, 0, 0)" }
+          ],
+          {
+            duration: 300,
+            easing: "cubic-bezier(.16, 1, .3, 1)",
+            fill: "both"
+          }
+        );
+
+        item._moveAnimation.onfinish = () => {
+          item._moveAnimation = null;
+        };
+      });
+    }
+
+    function movePlaceholder(clientY) {
+      if (!dragState || !dragState.placeholder) return;
+
+      const reference = getInsertReference(clientY);
+      const placeholder = dragState.placeholder;
+
+      if (reference) {
+        if (reference === placeholder.nextSibling) return;
+
+        const before = captureListPositions();
+        todoList.insertBefore(placeholder, reference);
+        animateListReflow(before);
+        return;
+      }
+
+      if (placeholder === todoList.lastElementChild) return;
+
+      const before = captureListPositions();
+      todoList.appendChild(placeholder);
+      animateListReflow(before);
     }
 
     function startDrag(event, todoId, sourceLi) {
@@ -1075,24 +1444,33 @@
       floatCard.classList.add("drag-float");
       floatCard.style.width = rect.width + "px";
       floatCard.style.height = rect.height + "px";
+      floatCard.style.transition = "none";
+      floatCard.style.animation = "none";
+      floatCard.style.willChange = "transform";
       document.body.appendChild(floatCard);
+
+      const placeholder = document.createElement("div");
+      placeholder.className = "drag-placeholder";
+      placeholder.style.height = rect.height + "px";
+      todoList.insertBefore(placeholder, sourceLi.nextSibling);
 
       dragState = {
         todoId,
         sourceLi,
         floatCard,
+        placeholder,
         offsetX: event.clientX - rect.left,
-        offsetY: event.clientY - rect.top,
-        insertIndex: null
+        offsetY: event.clientY - rect.top
       };
 
       sourceLi.classList.add("drag-source");
+      todoList.classList.add("dragging-list");
       swipedTodoId = null;
       updateDrag(event.clientX, event.clientY);
 
       window.addEventListener("pointermove", onDragMove, { passive: false });
       window.addEventListener("pointerup", onDragEnd, { passive: false });
-      window.addEventListener("pointercancel", onDragEnd, { passive: false });
+      window.addEventListener("pointercancel", onDragCancel, { passive: false });
     }
 
     function updateDrag(clientX, clientY) {
@@ -1100,16 +1478,39 @@
 
       const x = clientX - dragState.offsetX;
       const y = clientY - dragState.offsetY;
+      dragState.floatCard.style.transition = "none";
       dragState.floatCard.style.transform = `translate3d(${x}px, ${y}px, 0)`;
 
-      dragState.insertIndex = getInsertIndex(clientY);
-      showDropIndicator(dragState.insertIndex);
+      // 浮いているカード自身が判定の邪魔をしないように、実際のDOM内でplaceholderを動かす
+      movePlaceholder(clientY);
     }
 
     function onDragMove(event) {
       if (!dragState) return;
       event.preventDefault();
       updateDrag(event.clientX, event.clientY);
+    }
+
+    function cleanupDrag() {
+      if (!dragState) return;
+
+      dragState.floatCard.remove();
+      dragState.placeholder.remove();
+      document.querySelectorAll("li.drag-source").forEach(item => item.classList.remove("drag-source"));
+      todoList.classList.remove("dragging-list");
+      clearDropIndicators();
+
+      window.removeEventListener("pointermove", onDragMove);
+      window.removeEventListener("pointerup", onDragEnd);
+      window.removeEventListener("pointercancel", onDragCancel);
+    }
+
+    function onDragCancel(event) {
+      if (!dragState) return;
+      event.preventDefault();
+      cleanupDrag();
+      dragState = null;
+      renderAll();
     }
 
     function onDragEnd(event) {
@@ -1119,16 +1520,9 @@
       updateDrag(event.clientX, event.clientY);
 
       const todoId = dragState.todoId;
-      const insertIndex = dragState.insertIndex;
+      const insertIndex = getPlaceholderIndex();
 
-      dragState.floatCard.remove();
-      document.querySelectorAll("li.drag-source").forEach(item => item.classList.remove("drag-source"));
-      clearDropIndicators();
-
-      window.removeEventListener("pointermove", onDragMove);
-      window.removeEventListener("pointerup", onDragEnd);
-      window.removeEventListener("pointercancel", onDragEnd);
-
+      cleanupDrag();
       dragState = null;
 
       reorderTodoToIndex(todoId, insertIndex);
@@ -1160,6 +1554,38 @@
         swipedTodoId = null;
       }
 
+      renderAll();
+    }
+
+    function openMobilePanel() {
+      document.body.classList.add("panel-open");
+      mobilePanelToggle.textContent = "閉じる";
+      mobilePanelToggle.setAttribute("aria-label", "設定を閉じる");
+    }
+
+    function closeMobilePanel() {
+      document.body.classList.remove("panel-open");
+      mobilePanelToggle.textContent = "設定";
+      mobilePanelToggle.setAttribute("aria-label", "設定を開く");
+    }
+
+    function toggleMobilePanel(event) {
+      if (event) event.stopPropagation();
+      if (document.body.classList.contains("panel-open")) {
+        closeMobilePanel();
+      } else {
+        openMobilePanel();
+      }
+    }
+
+    function addTodoMobile() {
+      closeMobilePanel();
+      const text = prompt("追加する項目名を入力してください");
+      if (text === null) return;
+      const cleanText = text.trim();
+      if (!cleanText) return;
+      saveHistory();
+      checklist.todos.push({ id: Date.now(), text: cleanText, checks: [false, false] });
       renderAll();
     }
 
@@ -1275,6 +1701,20 @@
           const touch = event.touches[0];
           touchStartX = touch.clientX;
           touchStartY = touch.clientY;
+          touchMoved = false;
+        }, { passive: true });
+
+        li.addEventListener("touchmove", event => {
+          if (event.target.closest(".drag-handle") || event.target.closest("button") || event.target.closest("input")) return;
+          const touch = event.touches[0];
+          const dx = touch.clientX - touchStartX;
+          const dy = touch.clientY - touchStartY;
+          if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+            touchMoved = true;
+            if (dx < -18) {
+              li.classList.add("swiping");
+            }
+          }
         }, { passive: true });
 
         li.addEventListener("touchend", event => {
@@ -1282,6 +1722,7 @@
           const touch = event.changedTouches[0];
           const dx = touch.clientX - touchStartX;
           const dy = touch.clientY - touchStartY;
+          li.classList.remove("swiping");
           if (Math.abs(dx) > 34 && Math.abs(dx) > Math.abs(dy) * 1.4) {
             swipedTodoId = dx < 0 ? todo.id : null;
             renderTodos();
@@ -1475,6 +1916,11 @@
       checklist.checkLabels[1] = checkLabel2Input.value.trim() || "チェック2";
       renderTodos();
     });
+
+    if (mobileAddBtn) mobileAddBtn.addEventListener("click", addTodoMobile);
+    if (mobilePanelToggle) mobilePanelToggle.addEventListener("click", toggleMobilePanel);
+    if (mobilePanelBackdrop) mobilePanelBackdrop.addEventListener("click", closeMobilePanel);
+    if (mobilePanelCloseBtn) mobilePanelCloseBtn.addEventListener("click", closeMobilePanel);
 
     todoList.addEventListener("click", event => {
       if (event.target.closest(".delete-btn") || event.target.closest(".drag-handle")) return;
