@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="ja" style="--accent: #2563eb; --bg-main: #f7f3ec; --paper: #fffdf8; --paper-2: #fffdf8; --side-top: #15171a; --side-bottom: #24272d; --number-bg: #2563eb; --number-text: #ffffff; --done-bg: #eeeae4; --done-line: rgba(238, 234, 228, 0.85); --done-text: #a39a90;"><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>チェックリスト</title>
   <style>
     * { box-sizing: border-box; }
@@ -578,19 +579,22 @@
 
       .side-panel {
         position: fixed;
-        top: 12px;
-        right: 12px;
-        bottom: 12px;
-        width: min(360px, calc(100vw - 24px));
-        max-height: none;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: auto;
+        max-height: min(82vh, 680px);
         overflow-y: auto;
-        z-index: 30;
-        transform: translateX(calc(100% + 24px));
+        z-index: 1001;
+        transform: translateY(calc(100% + 24px));
         transition: transform 0.22s ease;
+        border-radius: 24px;
+        padding-bottom: 72px;
+        -webkit-overflow-scrolling: touch;
       }
 
       body.panel-open .side-panel {
-        transform: translateX(0);
+        transform: translateY(0);
       }
 
       .mobile-panel-toggle {
@@ -598,7 +602,7 @@
         position: fixed;
         right: 16px;
         bottom: 16px;
-        z-index: 40;
+        z-index: 1002;
         border: none;
         border-radius: 999px;
         padding: 13px 18px;
@@ -613,9 +617,8 @@
         display: none;
         position: fixed;
         inset: 0;
-        z-index: 20;
+        z-index: 1000;
         background: rgba(15, 23, 42, 0.38);
-        backdrop-filter: blur(2px);
       }
 
       body.panel-open .mobile-panel-backdrop {
@@ -643,9 +646,9 @@
   <main class="app">
     <div class="layout">
       <section class="list-panel" aria-label="Todoリスト">
-        <p class="summary" id="summary">未チェック：0件 / 片方チェック：0件 / 両方チェック：0件</p>
+        <p class="summary" id="summary"></p>
         <ul id="todoList"></ul>
-        <div class="empty" id="emptyMessage" style="display: block;">まだTodoはありません。</div>
+        <div class="empty" id="emptyMessage">まだTodoはありません。</div>
       </section>
 
       <aside class="side-panel" aria-label="操作パネル">
@@ -654,7 +657,7 @@
         </h1>
 
         <div class="input-area">
-          <input id="todoInput" type="text" placeholder="やることを入力" autocomplete="off">
+          <input id="todoInput" type="text" placeholder="やることを入力" autocomplete="off" />
           <button class="add-btn" id="addBtn">＋ 追加する</button>
         </div>
 
@@ -671,11 +674,11 @@
               </div>
               <div class="setting-row">
                 <label for="checkLabel1Input">チェック1の名前</label>
-                <input id="checkLabel1Input" type="text" placeholder="例：実施">
+                <input id="checkLabel1Input" type="text" placeholder="例：実施" />
               </div>
-              <div class="setting-row" id="checkLabel2Row" style="display: grid;">
+              <div class="setting-row" id="checkLabel2Row">
                 <label for="checkLabel2Input">チェック2の名前</label>
-                <input id="checkLabel2Input" type="text" placeholder="例：確認">
+                <input id="checkLabel2Input" type="text" placeholder="例：確認" />
               </div>
             </div>
           </div>
@@ -692,8 +695,8 @@
           <div class="control-box">
             <span class="control-label">ACTION</span>
             <div class="action-btns">
-              <button class="undo-btn" id="undoBtn" disabled="">1つ戻る</button>
-              <button class="undo-btn" id="redoBtn" disabled="">1つ進む</button>
+              <button class="undo-btn" id="undoBtn" disabled>1つ戻る</button>
+              <button class="undo-btn" id="redoBtn" disabled>1つ進む</button>
             </div>
             <div class="action-btns" style="margin-top: 7px;">
               <button class="clear-btn" id="clearCompletedBtn" style="grid-column: 1 / -1;">完了を削除</button>
@@ -714,27 +717,27 @@
             <div class="theme-grid" id="themeGrid">
               <div class="theme-row">
                 <label for="colorAccent">アクセント</label>
-                <input type="color" id="colorAccent">
+                <input type="color" id="colorAccent" />
               </div>
               <div class="theme-row">
                 <label for="colorBgMain">背景色</label>
-                <input type="color" id="colorBgMain">
+                <input type="color" id="colorBgMain" />
               </div>
               <div class="theme-row">
                 <label for="colorPaper">左側カード</label>
-                <input type="color" id="colorPaper">
+                <input type="color" id="colorPaper" />
               </div>
               <div class="theme-row">
                 <label for="colorSideTop">右側上部</label>
-                <input type="color" id="colorSideTop">
+                <input type="color" id="colorSideTop" />
               </div>
               <div class="theme-row">
                 <label for="colorSideBottom">右側下部</label>
-                <input type="color" id="colorSideBottom">
+                <input type="color" id="colorSideBottom" />
               </div>
               <div class="theme-row">
                 <label for="colorDoneBg">完了項目</label>
-                <input type="color" id="colorDoneBg">
+                <input type="color" id="colorDoneBg" />
               </div>
               <button class="theme-reset-btn" id="themeResetBtn">初期配色に戻す</button>
             </div>
@@ -744,7 +747,7 @@
     </div>
   </main>
 
-  <script id="embeddedData" type="application/json">{"title":"チェックリスト","todos":[],"theme":{"accent":"#2563eb","bgMain":"#f7f3ec","paper":"#fffdf8","sideTop":"#15171a","sideBottom":"#24272d","doneBg":"#eeeae4"},"checkCount":2,"checkLabels":["チェック1","チェック2"],"savedAt":"2026-05-12T00:49:36.518Z"}</script>
+  <script id="embeddedData" type="application/json">{"title":"チェックリスト","todos":[],"theme":{"accent":"#2563eb","bgMain":"#f7f3ec","paper":"#fffdf8","sideTop":"#15171a","sideBottom":"#24272d","doneBg":"#eeeae4"},"checkCount":2,"checkLabels":["チェック1","チェック2"]}</script>
 
   <script>
     const defaultTheme = {
@@ -1214,15 +1217,18 @@
       document.body.classList.add("panel-open");
       mobilePanelToggle.textContent = "閉じる";
       mobilePanelToggle.setAttribute("aria-label", "操作パネルを閉じる");
+      mobilePanelToggle.setAttribute("aria-expanded", "true");
     }
 
     function closeMobilePanel() {
       document.body.classList.remove("panel-open");
       mobilePanelToggle.textContent = "操作";
       mobilePanelToggle.setAttribute("aria-label", "操作パネルを開く");
+      mobilePanelToggle.setAttribute("aria-expanded", "false");
     }
 
-    function toggleMobilePanel() {
+    function toggleMobilePanel(event) {
+      if (event) event.stopPropagation();
       if (document.body.classList.contains("panel-open")) {
         closeMobilePanel();
       } else {
@@ -1306,6 +1312,5 @@
 
     renderAll();
   </script>
-
-
-</body></html>
+</body>
+</html>
