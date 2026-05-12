@@ -97,7 +97,7 @@
 
     li {
       display: grid;
-      grid-template-columns: 40px minmax(150px, 42%) minmax(0, 1fr) auto 42px;
+      grid-template-columns: 40px minmax(96px, 26%) minmax(0, 1fr) auto 42px;
       align-items: center;
       gap: 8px;
       background: #ffffff;
@@ -173,33 +173,33 @@
 
     .check-pair {
       display: grid;
-      grid-template-columns: repeat(5, minmax(24px, 1fr));
+      grid-template-columns: repeat(3, minmax(24px, 1fr));
       align-items: center;
       justify-items: center;
-      gap: 7px;
-      padding-top: 2px;
+      gap: 5px;
+      padding-top: 0;
       width: 100%;
-      max-width: 260px;
+      max-width: 150px;
     }
 
     .check-cell {
       display: grid;
       justify-items: center;
       align-content: center;
-      gap: 4px;
+      gap: 2px;
       min-width: 24px;
-      max-width: 46px;
+      max-width: 44px;
       overflow: visible;
     }
 
     .check-label {
       display: block;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 900;
-      line-height: 1.25;
+      line-height: 1.1;
       color: #7c6f64;
       max-width: 44px;
-      min-height: 13px;
+      min-height: 10px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -217,9 +217,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 7px;
       background: rgba(255,255,255,0.72);
       border: 1px solid #e7dfd4;
     }
@@ -670,8 +670,8 @@
     }
 
     .check-pair {
-      grid-template-columns: repeat(5, minmax(24px, 1fr));
-      max-width: 260px;
+      grid-template-columns: repeat(3, minmax(24px, 1fr));
+      max-width: 150px;
       width: 100%;
     }
 
@@ -770,7 +770,7 @@
         gap: 5px;
         border-left-width: 5px;
         border-radius: 14px;
-        padding: 6px 7px;
+        padding: 5px 7px;
         position: relative;
         overflow: hidden;
         touch-action: pan-y;
@@ -810,26 +810,26 @@
 
       .check-cell {
         min-width: 22px;
-        max-width: 42px;
-        gap: 2px;
+        max-width: 40px;
+        gap: 1px;
       }
 
       .check-label {
-        font-size: 9px;
-        line-height: 1.1;
-        min-height: 10px;
-        max-width: 40px;
+        font-size: 8px;
+        line-height: 1.05;
+        min-height: 9px;
+        max-width: 38px;
       }
 
       .check-wrap {
-        width: 19px;
-        height: 19px;
+        width: 18px;
+        height: 18px;
         border-radius: 7px;
       }
 
       input[type="checkbox"] {
-        width: 15px;
-        height: 15px;
+        width: 14px;
+        height: 14px;
       }
 
       .todo-text {
@@ -848,12 +848,12 @@
         grid-column: 2 / 3;
         grid-row: 2 / 3;
         justify-self: stretch;
-        grid-template-columns: repeat(5, minmax(22px, 1fr));
-        max-width: none;
+        grid-template-columns: repeat(3, minmax(22px, 1fr));
+        max-width: 128px;
         width: 100%;
-        row-gap: 3px;
-        column-gap: 5px;
-        margin-top: 2px;
+        row-gap: 2px;
+        column-gap: 4px;
+        margin-top: 0;
       }
 
       .check-label-edit-row input {
