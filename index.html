@@ -569,16 +569,47 @@
     }
 
     @media (max-width: 760px) {
-      body { padding: 20px 12px; }
-
-      .app {
-        padding: 14px;
-        border-radius: 24px;
+      body {
+        padding: 12px;
+        padding-bottom: 88px;
       }
 
-      .layout { grid-template-columns: 1fr; }
+      .app {
+        padding: 12px;
+        border-radius: 22px;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .list-panel {
+        padding: 14px;
+      }
+
+      li {
+        grid-template-columns: 36px 64px minmax(0, 1fr);
+      }
+
+      li.completed {
+        transform: translateX(14px);
+      }
+
+      li.completed:hover {
+        transform: translateX(14px);
+      }
+
+      .sort-btns,
+      .delete-btn {
+        grid-column: 3 / 4;
+      }
+
+      .sort-btns {
+        justify-self: start;
+      }
 
       .side-panel {
+        display: none;
         position: fixed;
         left: 10px;
         right: 10px;
@@ -587,15 +618,13 @@
         max-height: min(82vh, 680px);
         overflow-y: auto;
         z-index: 1001;
-        transform: translateY(calc(100% + 24px));
-        transition: transform 0.22s ease;
         border-radius: 24px;
         padding-bottom: 72px;
         -webkit-overflow-scrolling: touch;
       }
 
       body.panel-open .side-panel {
-        transform: translateY(0);
+        display: block;
       }
 
       .side-panel .input-area {
@@ -634,7 +663,7 @@
         border: none;
         border-radius: 999px;
         padding: 10px 14px;
-        background: rgba(21, 23, 26, 0.86);
+        background: rgba(21, 23, 26, 0.88);
         color: #ffffff;
         font-size: 13px;
         font-weight: 900;
@@ -653,19 +682,6 @@
       body.panel-open .mobile-panel-backdrop {
         display: block;
       }
-
-      .list-panel { padding: 18px; }
-
-      li { grid-template-columns: 36px 64px minmax(0, 1fr); }
-
-      li.completed { transform: translateX(20px); }
-
-      li.completed:hover { transform: translateX(20px); }
-
-      .sort-btns,
-      .delete-btn { grid-column: 3 / 4; }
-
-      .sort-btns { justify-self: start; }
     }
   </style>
 </head>
