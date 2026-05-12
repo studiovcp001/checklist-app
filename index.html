@@ -736,6 +736,8 @@
         justify-self: center;
         align-items: center;
         justify-content: center;
+        position: relative;
+        z-index: 5;
       }
 
       li {
@@ -744,27 +746,70 @@
         touch-action: pan-y;
       }
 
-      .delete-btn {
+      li::after {
+        content: "";
         position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
-        width: 72px;
-        min-width: 72px;
+        width: 86px;
+        background:
+          linear-gradient(135deg, rgba(248, 113, 113, 0.95), rgba(220, 38, 38, 1));
         border-radius: 0 14px 14px 0;
-        background: #dc2626;
-        color: #ffffff;
         transform: translateX(100%);
-        transition: transform 0.18s ease;
-        z-index: 3;
+        transition: transform 0.2s ease;
+        z-index: 1;
       }
 
-      li.swiped .delete-btn {
+      li.swiped::after {
         transform: translateX(0);
       }
 
       li.swiped {
-        padding-right: 78px;
+        padding-right: 86px;
+        box-shadow: 0 12px 26px rgba(220, 38, 38, 0.16);
+      }
+
+      li.swiped .todo-number,
+      li.swiped .check-pair,
+      li.swiped .todo-text,
+      li.swiped .drag-handle {
+        transform: translateX(-6px);
+        transition: transform 0.2s ease;
+      }
+
+      .delete-btn {
+        position: absolute;
+        top: 50%;
+        right: 9px;
+        width: 64px;
+        min-width: 64px;
+        height: calc(100% - 12px);
+        border-radius: 13px;
+        background: rgba(255,255,255,0.16);
+        color: #ffffff;
+        transform: translate(110%, -50%);
+        transition: transform 0.2s ease, background 0.18s ease;
+        z-index: 4;
+        pointer-events: none;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
+      }
+
+      .delete-btn::before {
+        content: "×";
+        display: block;
+        font-size: 18px;
+        line-height: 1;
+        margin-bottom: 2px;
+      }
+
+      li.swiped .delete-btn {
+        transform: translate(0, -50%);
+        pointer-events: auto;
+      }
+
+      li.swiped .delete-btn:active {
+        background: rgba(255,255,255,0.28);
       }
 
   
@@ -1367,7 +1412,10 @@
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
         deleteBtn.textContent = "削除";
-        deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
+        deleteBtn.addEventListener("click", event => {
+          event.stopPropagation();
+          deleteTodo(todo.id);
+        });
 
         const dragHandle = document.createElement("button");
         dragHandle.className = "drag-handle";
@@ -1375,6 +1423,10 @@
         dragHandle.textContent = "☰";
         dragHandle.title = "ドラッグして並べ替え";
         dragHandle.draggable = true;
+
+        dragHandle.addEventListener("click", event => {
+          event.stopPropagation();
+        });
 
         dragHandle.addEventListener("dragstart", event => {
           dragTodoId = todo.id;
@@ -1461,7 +1513,7 @@
           const touch = event.changedTouches[0];
           const dx = touch.clientX - touchStartX;
           const dy = touch.clientY - touchStartY;
-          if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) * 1.5) {
             swipedTodoId = dx < 0 ? todo.id : null;
             renderTodos();
           }
@@ -1725,6 +1777,14 @@
 
     window.addEventListener("keydown", event => {
       if (event.key === "Escape") closeMobilePanel();
+    });
+
+    todoList.addEventListener("click", event => {
+      if (event.target.closest(".delete-btn") || event.target.closest(".drag-handle")) return;
+      if (swipedTodoId !== null) {
+        swipedTodoId = null;
+        renderTodos();
+      }
     });
 
     themeToggleBtn.addEventListener("click", () => {
