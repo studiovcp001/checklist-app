@@ -560,6 +560,12 @@
       line-height: 1.6;
     }
 
+
+    .mobile-panel-toggle,
+    .mobile-panel-backdrop {
+      display: none;
+    }
+
     @media (max-width: 760px) {
       body { padding: 20px 12px; }
 
@@ -571,10 +577,49 @@
       .layout { grid-template-columns: 1fr; }
 
       .side-panel {
-        position: static;
-        order: -1;
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: min(360px, calc(100vw - 24px));
         max-height: none;
-        overflow: visible;
+        overflow-y: auto;
+        z-index: 30;
+        transform: translateX(calc(100% + 24px));
+        transition: transform 0.22s ease;
+      }
+
+      body.panel-open .side-panel {
+        transform: translateX(0);
+      }
+
+      .mobile-panel-toggle {
+        display: inline-flex;
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 40;
+        border: none;
+        border-radius: 999px;
+        padding: 13px 18px;
+        background: linear-gradient(135deg, #e7c873, #d6a84f);
+        color: #1c1917;
+        font-weight: 900;
+        box-shadow: 0 14px 28px rgba(21, 23, 26, 0.24);
+        cursor: pointer;
+      }
+
+      .mobile-panel-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        background: rgba(15, 23, 42, 0.38);
+        backdrop-filter: blur(2px);
+      }
+
+      body.panel-open .mobile-panel-backdrop {
+        display: block;
       }
 
       .list-panel { padding: 18px; }
@@ -593,6 +638,8 @@
   </style>
 </head>
 <body>
+  <button class="mobile-panel-toggle" id="mobilePanelToggle" aria-label="操作パネルを開く">操作</button>
+  <div class="mobile-panel-backdrop" id="mobilePanelBackdrop"></div>
   <main class="app">
     <div class="layout">
       <section class="list-panel" aria-label="Todoリスト">
@@ -645,7 +692,7 @@
           <div class="control-box">
             <span class="control-label">ACTION</span>
             <div class="action-btns">
-              <button class="undo-btn" id="undoBtn">1つ戻る</button>
+              <button class="undo-btn" id="undoBtn" disabled="">1つ戻る</button>
               <button class="undo-btn" id="redoBtn" disabled="">1つ進む</button>
             </div>
             <div class="action-btns" style="margin-top: 7px;">
@@ -697,7 +744,7 @@
     </div>
   </main>
 
-  <script id="embeddedData" type="application/json">{"title":"チェックリスト","todos":[],"theme":{"accent":"#2563eb","bgMain":"#f7f3ec","paper":"#fffdf8","sideTop":"#15171a","sideBottom":"#24272d","doneBg":"#eeeae4"},"checkCount":2,"checkLabels":["区費","緑"],"savedAt":"2026-05-12T00:36:29.709Z"}</script>
+  <script id="embeddedData" type="application/json">{"title":"チェックリスト","todos":[],"theme":{"accent":"#2563eb","bgMain":"#f7f3ec","paper":"#fffdf8","sideTop":"#15171a","sideBottom":"#24272d","doneBg":"#eeeae4"},"checkCount":2,"checkLabels":["チェック1","チェック2"],"savedAt":"2026-05-12T00:49:36.518Z"}</script>
 
   <script>
     const defaultTheme = {
@@ -798,6 +845,8 @@
     const checkLabel1Input = document.getElementById("checkLabel1Input");
     const checkLabel2Input = document.getElementById("checkLabel2Input");
     const checkLabel2Row = document.getElementById("checkLabel2Row");
+    const mobilePanelToggle = document.getElementById("mobilePanelToggle");
+    const mobilePanelBackdrop = document.getElementById("mobilePanelBackdrop");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
     const themeGrid = document.getElementById("themeGrid");
     const colorAccent = document.getElementById("colorAccent");
@@ -1159,6 +1208,33 @@
     checkLabel2Input.addEventListener("input", () => {
       checklist.checkLabels[1] = checkLabel2Input.value.trim() || "チェック2";
       renderTodos();
+    });
+
+    function openMobilePanel() {
+      document.body.classList.add("panel-open");
+      mobilePanelToggle.textContent = "閉じる";
+      mobilePanelToggle.setAttribute("aria-label", "操作パネルを閉じる");
+    }
+
+    function closeMobilePanel() {
+      document.body.classList.remove("panel-open");
+      mobilePanelToggle.textContent = "操作";
+      mobilePanelToggle.setAttribute("aria-label", "操作パネルを開く");
+    }
+
+    function toggleMobilePanel() {
+      if (document.body.classList.contains("panel-open")) {
+        closeMobilePanel();
+      } else {
+        openMobilePanel();
+      }
+    }
+
+    mobilePanelToggle.addEventListener("click", toggleMobilePanel);
+    mobilePanelBackdrop.addEventListener("click", closeMobilePanel);
+
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeMobilePanel();
     });
 
     themeToggleBtn.addEventListener("click", () => {
