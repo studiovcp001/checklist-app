@@ -737,7 +737,7 @@
         align-items: center;
         justify-content: center;
         position: relative;
-        z-index: 5;
+        z-index: 3;
       }
 
       li {
@@ -746,6 +746,34 @@
         touch-action: pan-y;
       }
 
+      li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: var(--accent);
+        border-radius: 14px 0 0 14px;
+        transform: translateX(var(--card-shift));
+        transition: transform 0.18s ease;
+        z-index: 2;
+      }
+
+      li.partial::before {
+        background: var(--partial-line);
+      }
+
+      li.completed::before {
+        background: var(--done-text);
+      }
+
+      li.swiping,
+      li.swiped {
+        border-left-color: transparent;
+      }
+
+
       li {
         --swipe-x: 0px;
         --card-shift: 0px;
@@ -753,13 +781,13 @@
 
       li.swiped {
         --swipe-x: 88px;
-        --card-shift: -18px;
+        --card-shift: -56px;
         padding-right: 88px;
         box-shadow: 0 12px 26px rgba(220, 38, 38, 0.16);
       }
 
       li.swiping {
-        --card-shift: calc(var(--swipe-x) * -0.20);
+        --card-shift: calc(var(--swipe-x) * -0.64);
         box-shadow: 0 12px 26px rgba(220, 38, 38, 0.10);
       }
 
@@ -768,7 +796,7 @@
       li.swiped .todo-text,
       li.swiped .drag-handle {
         transform: translateX(var(--card-shift));
-        transition: transform 0.16s ease;
+        transition: transform 0.18s ease;
       }
 
       li.swiping .todo-number,
@@ -817,6 +845,7 @@
 
       li.swiped .delete-btn {
         pointer-events: auto;
+        z-index: 10;
       }
 
       li.swiped .delete-btn:active {
