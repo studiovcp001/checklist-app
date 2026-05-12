@@ -562,7 +562,8 @@
     }
 
 
-    .mobile-panel-toggle,
+    .mobile-add-btn,
+    .mobile-settings-btn,
     .mobile-panel-backdrop {
       display: none;
     }
@@ -597,19 +598,47 @@
         transform: translateY(0);
       }
 
-      .mobile-panel-toggle {
+      .side-panel .input-area {
+        display: none;
+      }
+
+      .mobile-add-btn {
         display: inline-flex;
+        align-items: center;
+        justify-content: center;
         position: fixed;
         right: 16px;
         bottom: 16px;
         z-index: 1002;
+        width: 58px;
+        height: 58px;
         border: none;
         border-radius: 999px;
-        padding: 13px 18px;
         background: linear-gradient(135deg, #e7c873, #d6a84f);
         color: #1c1917;
+        font-size: 30px;
+        line-height: 1;
         font-weight: 900;
         box-shadow: 0 14px 28px rgba(21, 23, 26, 0.24);
+        cursor: pointer;
+      }
+
+      .mobile-settings-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        right: 84px;
+        bottom: 20px;
+        z-index: 1002;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 14px;
+        background: rgba(21, 23, 26, 0.86);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 900;
+        box-shadow: 0 12px 24px rgba(21, 23, 26, 0.2);
         cursor: pointer;
       }
 
@@ -641,7 +670,8 @@
   </style>
 </head>
 <body>
-  <button class="mobile-panel-toggle" id="mobilePanelToggle" aria-label="操作パネルを開く">操作</button>
+  <button class="mobile-add-btn" id="mobileAddBtn" aria-label="リストを追加">＋</button>
+  <button class="mobile-settings-btn" id="mobilePanelToggle" aria-label="設定を開く">設定</button>
   <div class="mobile-panel-backdrop" id="mobilePanelBackdrop"></div>
   <main class="app">
     <div class="layout">
@@ -848,6 +878,7 @@
     const checkLabel1Input = document.getElementById("checkLabel1Input");
     const checkLabel2Input = document.getElementById("checkLabel2Input");
     const checkLabel2Row = document.getElementById("checkLabel2Row");
+    const mobileAddBtn = document.getElementById("mobileAddBtn");
     const mobilePanelToggle = document.getElementById("mobilePanelToggle");
     const mobilePanelBackdrop = document.getElementById("mobilePanelBackdrop");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
@@ -1053,14 +1084,25 @@
       renderTodos();
     }
 
-    function addTodo() {
-      const text = todoInput.value.trim();
-      if (!text) return;
+    function addTodoFromText(text) {
+      const cleanText = String(text || "").trim();
+      if (!cleanText) return false;
       saveHistory();
-      checklist.todos.push({ id: Date.now(), text, checks: [false, false] });
-      todoInput.value = "";
+      checklist.todos.push({ id: Date.now(), text: cleanText, checks: [false, false] });
       renderAll();
+      return true;
+    }
+
+    function addTodo() {
+      const added = addTodoFromText(todoInput.value);
+      if (!added) return;
+      todoInput.value = "";
       todoInput.focus();
+    }
+
+    function addTodoMobile() {
+      const text = prompt("追加する項目名を入力してください");
+      addTodoFromText(text);
     }
 
     function toggleTodoCheck(id, checkIndex) {
@@ -1216,14 +1258,14 @@
     function openMobilePanel() {
       document.body.classList.add("panel-open");
       mobilePanelToggle.textContent = "閉じる";
-      mobilePanelToggle.setAttribute("aria-label", "操作パネルを閉じる");
+      mobilePanelToggle.setAttribute("aria-label", "設定を閉じる");
       mobilePanelToggle.setAttribute("aria-expanded", "true");
     }
 
     function closeMobilePanel() {
       document.body.classList.remove("panel-open");
-      mobilePanelToggle.textContent = "操作";
-      mobilePanelToggle.setAttribute("aria-label", "操作パネルを開く");
+      mobilePanelToggle.textContent = "設定";
+      mobilePanelToggle.setAttribute("aria-label", "設定を開く");
       mobilePanelToggle.setAttribute("aria-expanded", "false");
     }
 
@@ -1236,6 +1278,7 @@
       }
     }
 
+    mobileAddBtn.addEventListener("click", addTodoMobile);
     mobilePanelToggle.addEventListener("click", toggleMobilePanel);
     mobilePanelBackdrop.addEventListener("click", closeMobilePanel);
 
