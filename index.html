@@ -624,6 +624,52 @@
       background: #ffffff;
     }
 
+
+    .check-label-editor {
+      display: grid;
+      gap: 8px;
+    }
+
+    .check-label-edit-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .check-label-edit-row input {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 13px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .check-label-delete-btn {
+      border: none;
+      border-radius: 11px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.82);
+    }
+
+    .check-label-delete-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .check-pair {
+      flex-wrap: wrap;
+      max-width: 190px;
+    }
+
     .theme-toggle-btn {
       width: 100%;
       background: rgba(255,255,255,0.10);
@@ -789,6 +835,22 @@
 
       .sort-btns {
         display: none !important;
+      }
+
+
+      .check-pair {
+        max-width: 82px;
+        row-gap: 2px;
+      }
+
+      .check-label-edit-row input {
+        padding: 7px 9px;
+        font-size: 12px;
+      }
+
+      .check-label-delete-btn {
+        padding: 7px 9px;
+        font-size: 12px;
       }
 
       .drag-handle {
@@ -1055,21 +1117,9 @@
           <div class="control-box">
             <span class="control-label">CHECK</span>
             <div class="setting-btns">
-              <div class="setting-row">
-                <label for="checkCountSelect">チェック数</label>
-                <select id="checkCountSelect">
-                  <option value="1">1つ</option>
-                  <option value="2">2つ</option>
-                </select>
-              </div>
-              <div class="setting-row">
-                <label for="checkLabel1Input">チェック1の名前</label>
-                <input id="checkLabel1Input" type="text" placeholder="例：実施" />
-              </div>
-              <div class="setting-row" id="checkLabel2Row">
-                <label for="checkLabel2Input">チェック2の名前</label>
-                <input id="checkLabel2Input" type="text" placeholder="例：確認" />
-              </div>
+              <div id="checkLabelEditor" class="check-label-editor"></div>
+              <button class="file-btn" id="addCheckLabelBtn" type="button">＋ チェックを追加</button>
+              <p class="hint">チェック名は自由に編集できます。すべてチェックされると完了扱いになります。</p>
             </div>
           </div>
 
@@ -1151,17 +1201,24 @@
 
     function normalizeCheckLabels(labels) {
       const source = Array.isArray(labels) ? labels : [];
-      return [
-        String(source[0] || "チェック1"),
-        String(source[1] || "チェック2")
-      ];
+      const normalized = source
+        .map((label, index) => String(label || `チェック${index + 1}`).trim())
+        .filter(label => label.length > 0);
+
+      return normalized.length > 0 ? normalized : ["チェック1"];
     }
 
-    function normalizeTodos(todos) {
+    function normalizeTodosForLabels(todos, labels) {
+      const checkLength = Math.max(1, normalizeCheckLabels(labels).length);
+
       return todos.map((todo, index) => {
-        const checks = Array.isArray(todo.checks)
-          ? [Boolean(todo.checks[0]), Boolean(todo.checks[1])]
-          : [Boolean(todo.completed), Boolean(todo.completed)];
+        let checks;
+        if (Array.isArray(todo.checks)) {
+          checks = Array.from({ length: checkLength }, (_, checkIndex) => Boolean(todo.checks[checkIndex]));
+        } else {
+          checks = Array.from({ length: checkLength }, () => Boolean(todo.completed));
+        }
+
         return {
           id: typeof todo.id === "number" ? todo.id : Date.now() + index,
           text: String(todo.text || ""),
@@ -1170,16 +1227,27 @@
       }).filter(todo => todo.text.trim());
     }
 
+    function ensureTodoCheckLength() {
+      checklist.checkLabels = normalizeCheckLabels(checklist.checkLabels);
+      const checkLength = checklist.checkLabels.length;
+
+      checklist.todos = checklist.todos.map(todo => {
+        const currentChecks = Array.isArray(todo.checks) ? todo.checks : [];
+        return {
+          ...todo,
+          checks: Array.from({ length: checkLength }, (_, index) => Boolean(currentChecks[index]))
+        };
+      });
+    }
+
     function isTodoComplete(todo) {
       const checks = getTodoChecks(todo);
-      if (checklist.checkCount === 1) return checks[0];
-      return checks[0] && checks[1];
+      return checks.length > 0 && checks.every(Boolean);
     }
 
     function isTodoPartial(todo) {
       const checks = getTodoChecks(todo);
-      if (checklist.checkCount === 1) return false;
-      return (checks[0] && !checks[1]) || (!checks[0] && checks[1]);
+      return checks.some(Boolean) && !checks.every(Boolean);
     }
 
     function getTodoStateClass(todo) {
@@ -1189,10 +1257,13 @@
     }
 
     function getTodoChecks(todo) {
+      const checkLength = Math.max(1, normalizeCheckLabels(checklist.checkLabels).length);
+
       if (!Array.isArray(todo.checks)) {
-        todo.checks = [Boolean(todo.completed), Boolean(todo.completed)];
+        todo.checks = Array.from({ length: checkLength }, () => Boolean(todo.completed));
       }
-      todo.checks = [Boolean(todo.checks[0]), Boolean(todo.checks[1])];
+
+      todo.checks = Array.from({ length: checkLength }, (_, index) => Boolean(todo.checks[index]));
       return todo.checks;
     }
 
@@ -1243,10 +1314,8 @@
     const redoBtn = document.getElementById("redoBtn");
     const filterBtns = document.querySelectorAll(".filter-btn");
     const saveHtmlBtn = document.getElementById("saveHtmlBtn");
-    const checkCountSelect = document.getElementById("checkCountSelect");
-    const checkLabel1Input = document.getElementById("checkLabel1Input");
-    const checkLabel2Input = document.getElementById("checkLabel2Input");
-    const checkLabel2Row = document.getElementById("checkLabel2Row");
+    const checkLabelEditor = document.getElementById("checkLabelEditor");
+    const addCheckLabelBtn = document.getElementById("addCheckLabelBtn");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
     const themeGrid = document.getElementById("themeGrid");
     const colorAccent = document.getElementById("colorAccent");
@@ -1299,12 +1368,60 @@
     }
 
     function renderCheckSettings() {
-      checklist.checkCount = checklist.checkCount === 1 ? 1 : 2;
       checklist.checkLabels = normalizeCheckLabels(checklist.checkLabels);
-      checkCountSelect.value = String(checklist.checkCount);
-      checkLabel1Input.value = checklist.checkLabels[0];
-      checkLabel2Input.value = checklist.checkLabels[1];
-      checkLabel2Row.style.display = checklist.checkCount === 2 ? "grid" : "none";
+      ensureTodoCheckLength();
+
+      checkLabelEditor.innerHTML = "";
+
+      checklist.checkLabels.forEach((labelText, index) => {
+        const row = document.createElement("div");
+        row.className = "check-label-edit-row";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = labelText;
+        input.placeholder = `チェック${index + 1}`;
+        input.addEventListener("input", () => {
+          checklist.checkLabels[index] = input.value.trim() || `チェック${index + 1}`;
+          renderTodos();
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "check-label-delete-btn";
+        deleteButton.textContent = "削除";
+        deleteButton.disabled = checklist.checkLabels.length <= 1;
+        deleteButton.addEventListener("click", () => {
+          removeCheckLabel(index);
+        });
+
+        row.appendChild(input);
+        row.appendChild(deleteButton);
+        checkLabelEditor.appendChild(row);
+      });
+    }
+
+    function addCheckLabel() {
+      checklist.checkLabels = normalizeCheckLabels(checklist.checkLabels);
+      checklist.checkLabels.push(`チェック${checklist.checkLabels.length + 1}`);
+      checklist.todos = checklist.todos.map(todo => ({
+        ...todo,
+        checks: [...getTodoChecks(todo), false]
+      }));
+      renderAll();
+    }
+
+    function removeCheckLabel(index) {
+      checklist.checkLabels = normalizeCheckLabels(checklist.checkLabels);
+      if (checklist.checkLabels.length <= 1) return;
+
+      checklist.checkLabels.splice(index, 1);
+      checklist.todos = checklist.todos.map(todo => {
+        const checks = getTodoChecks(todo);
+        checks.splice(index, 1);
+        return { ...todo, checks };
+      });
+      renderAll();
     }
 
     function saveHistory() {
@@ -1585,7 +1702,7 @@
       const cleanText = text.trim();
       if (!cleanText) return;
       saveHistory();
-      checklist.todos.push({ id: Date.now(), text: cleanText, checks: [false, false] });
+      checklist.todos.push({ id: Date.now(), text: cleanText, checks: Array.from({ length: checklist.checkLabels.length }, () => false) });
       renderAll();
     }
 
@@ -1608,7 +1725,7 @@
         const checkPair = document.createElement("div");
         checkPair.className = "check-pair";
 
-        for (let checkIndex = 0; checkIndex < checklist.checkCount; checkIndex++) {
+        for (let checkIndex = 0; checkIndex < checklist.checkLabels.length; checkIndex++) {
           const cell = document.createElement("div");
           cell.className = "check-cell";
 
@@ -1741,10 +1858,10 @@
       const completed = checklist.todos.filter(todo => isTodoComplete(todo)).length;
       const partial = checklist.todos.filter(todo => isTodoPartial(todo)).length;
       const untouched = checklist.todos.length - completed - partial;
-      if (checklist.checkCount === 1) {
+      if (checklist.checkLabels.length === 1) {
         summary.textContent = `未チェック：${untouched}件 / チェック済み：${completed}件`;
       } else {
-        summary.textContent = `未チェック：${untouched}件 / 片方チェック：${partial}件 / 両方チェック：${completed}件`;
+        summary.textContent = `未チェック：${untouched}件 / 途中：${partial}件 / 完了：${completed}件`;
       }
       emptyMessage.style.display = filteredTodos.length === 0 ? "block" : "none";
       updateHistoryButtons();
@@ -1761,7 +1878,7 @@
       const text = todoInput.value.trim();
       if (!text) return;
       saveHistory();
-      checklist.todos.push({ id: Date.now(), text, checks: [false, false] });
+      checklist.todos.push({ id: Date.now(), text, checks: Array.from({ length: checklist.checkLabels.length }, () => false) });
       todoInput.value = "";
       renderAll();
       todoInput.focus();
@@ -1846,11 +1963,9 @@
     }
 
     function syncCheckSettingsFromInputs() {
-      checklist.checkCount = Number(checkCountSelect.value) === 1 ? 1 : 2;
-      checklist.checkLabels = normalizeCheckLabels([
-        checkLabel1Input.value.trim() || "チェック1",
-        checkLabel2Input.value.trim() || "チェック2"
-      ]);
+      const inputs = Array.from(checkLabelEditor.querySelectorAll("input"));
+      checklist.checkLabels = normalizeCheckLabels(inputs.map((input, index) => input.value.trim() || `チェック${index + 1}`));
+      ensureTodoCheckLength();
     }
 
     function setActiveFilterButton() {
@@ -1875,7 +1990,7 @@
         title: checklist.title,
         todos: checklist.todos,
         theme: checklist.theme,
-        checkCount: checklist.checkCount,
+        checkCount: checklist.checkLabels.length,
         checkLabels: checklist.checkLabels,
         savedAt: new Date().toISOString()
       };
@@ -1901,22 +2016,6 @@
       URL.revokeObjectURL(url);
     }
 
-    checkCountSelect.addEventListener("change", () => {
-      saveHistory();
-      checklist.checkCount = Number(checkCountSelect.value) === 1 ? 1 : 2;
-      renderAll();
-    });
-
-    checkLabel1Input.addEventListener("input", () => {
-      checklist.checkLabels[0] = checkLabel1Input.value.trim() || "チェック1";
-      renderTodos();
-    });
-
-    checkLabel2Input.addEventListener("input", () => {
-      checklist.checkLabels[1] = checkLabel2Input.value.trim() || "チェック2";
-      renderTodos();
-    });
-
     if (mobileAddBtn) mobileAddBtn.addEventListener("click", addTodoMobile);
     if (mobilePanelToggle) mobilePanelToggle.addEventListener("click", toggleMobilePanel);
     if (mobilePanelBackdrop) mobilePanelBackdrop.addEventListener("click", closeMobilePanel);
@@ -1929,6 +2028,8 @@
         renderTodos();
       }
     });
+
+    if (addCheckLabelBtn) addCheckLabelBtn.addEventListener("click", addCheckLabel);
 
     themeToggleBtn.addEventListener("click", () => {
       const isOpen = themeGrid.classList.toggle("open");
