@@ -748,6 +748,7 @@
 
       li {
         --swipe-x: 0px;
+        --card-shift: 0px;
       }
 
       li::after {
@@ -756,7 +757,7 @@
         top: 0;
         right: 0;
         bottom: 0;
-        width: 84px;
+        width: 88px;
         background:
           linear-gradient(135deg, rgba(248, 113, 113, 0.98), rgba(220, 38, 38, 1));
         border-radius: 0 14px 14px 0;
@@ -771,12 +772,14 @@
       }
 
       li.swiped {
-        --swipe-x: 84px;
-        padding-right: 84px;
+        --swipe-x: 88px;
+        --card-shift: -18px;
+        padding-right: 88px;
         box-shadow: 0 12px 26px rgba(220, 38, 38, 0.16);
       }
 
       li.swiping {
+        --card-shift: calc(var(--swipe-x) * -0.20);
         box-shadow: 0 12px 26px rgba(220, 38, 38, 0.10);
       }
 
@@ -784,7 +787,7 @@
       li.swiped .check-pair,
       li.swiped .todo-text,
       li.swiped .drag-handle {
-        transform: translateX(-7px);
+        transform: translateX(var(--card-shift));
         transition: transform 0.16s ease;
       }
 
@@ -792,21 +795,21 @@
       li.swiping .check-pair,
       li.swiping .todo-text,
       li.swiping .drag-handle {
-        transform: translateX(calc(var(--swipe-x) * -0.075));
+        transform: translateX(var(--card-shift));
         transition: none;
       }
 
       .delete-btn {
         position: absolute;
         top: 50%;
-        right: 12px;
+        right: 16px;
         width: 56px;
         min-width: 56px;
         height: 56px;
         border-radius: 18px;
         background: rgba(255,255,255,0.20);
         color: #ffffff;
-        transform: translate(calc(128% - var(--swipe-x)), -50%);
+        transform: translate(104px, -50%);
         transition: transform 0.16s ease, background 0.18s ease;
         z-index: 4;
         pointer-events: none;
@@ -828,14 +831,15 @@
         transform: translateY(1px);
       }
 
-      li.swiping .delete-btn,
-      li.swiped .delete-btn {
+      li.swiping .delete-btn {
+        transform: translate(calc(104px - var(--swipe-x)), -50%);
         transition: none;
       }
 
       li.swiped .delete-btn {
         transform: translate(0, -50%);
         pointer-events: auto;
+        transition: none;
       }
 
       li.swiped .delete-btn:active {
@@ -1548,12 +1552,12 @@
 
           if (dx < 0) {
             event.preventDefault();
-            const amount = Math.min(84, Math.max(0, -dx));
+            const amount = Math.min(88, Math.max(0, -dx));
             li.classList.add("swiping");
             li.style.setProperty("--swipe-x", `${amount}px`);
           } else if (swipedTodoId === todo.id) {
             event.preventDefault();
-            const amount = Math.max(0, 84 - dx);
+            const amount = Math.max(0, 88 - dx);
             li.classList.add("swiping");
             li.style.setProperty("--swipe-x", `${amount}px`);
           }
@@ -1913,4 +1917,3 @@
   </script>
 </body>
 </html>
-
